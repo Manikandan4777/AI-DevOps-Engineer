@@ -1,14 +1,23 @@
+import Navbar from "../../components/Navbar/Navbar";
+import Sidebar from "../../components/Sidebar/Sidebar";
+import AIWorkspace from "../../components/AIWorkspace/AIWorkspace";
+import MainLayout from "../../layouts/MainLayout";
+
 function Home() {
   return (
-    <div className="min-h-screen bg-slate-950 text-white">
-      <h1 className="text-5xl font-bold text-center pt-20">
-        AI DevOps Engineer 🚀
-      </h1>
+    <MainLayout>
 
-      <p className="text-center text-gray-400 mt-4">
-        Your Intelligent DevOps Assistant
-      </p>
-    </div>
+      <Navbar />
+
+      <div className="flex">
+
+        <Sidebar />
+
+        <AIWorkspace />
+
+      </div>
+
+    </MainLayout>
   );
 }
 
