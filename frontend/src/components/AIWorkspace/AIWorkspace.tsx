@@ -1,9 +1,10 @@
 import PromptInput from "../PromptInput/PromptInput";
+import UploadCard from "../UploadProject/UploadCard";
 
 function AIWorkspace() {
   return (
-    <section className="flex-1 flex items-center justify-center px-10">
-      <div className="max-w-4xl w-full text-center">
+    <section className="flex-1 flex items-center justify-center px-10 py-10">
+      <div className="max-w-5xl w-full text-center">
 
         {/* Heading */}
         <h1 className="text-6xl font-bold text-white">
@@ -25,14 +26,14 @@ function AIWorkspace() {
 
           <button
             className="
-            px-7
-            py-4
-            rounded-2xl
-            bg-violet-600
-            hover:bg-violet-500
-            transition
-            duration-300
-            font-semibold
+              px-7
+              py-4
+              rounded-2xl
+              bg-violet-600
+              hover:bg-violet-500
+              transition
+              duration-300
+              font-semibold
             "
           >
             📂 Upload Project
@@ -40,14 +41,14 @@ function AIWorkspace() {
 
           <button
             className="
-            px-7
-            py-4
-            rounded-2xl
-            bg-cyan-600
-            hover:bg-cyan-500
-            transition
-            duration-300
-            font-semibold
+              px-7
+              py-4
+              rounded-2xl
+              bg-cyan-600
+              hover:bg-cyan-500
+              transition
+              duration-300
+              font-semibold
             "
           >
             🔗 GitHub Repository
@@ -55,8 +56,11 @@ function AIWorkspace() {
 
         </div>
 
-        {/* Prompt Input Component */}
-        <div className="mt-16">
+        {/* Upload Card */}
+        <UploadCard />
+
+        {/* Prompt Input */}
+        <div className="mt-10">
           <PromptInput />
         </div>
 

@@ -1,73 +1,98 @@
 import os
-import json
 
 
 def detect_framework(project_path: str):
-    result = {
-        "frontend": None,
-        "backend": None,
-        "language": None,
-        "docker": False,
-        "kubernetes": False
-    }
 
-    # --------------------
-    # React / Vite / Node
-    # --------------------
-    package_json = os.path.join(project_path, "package.json")
+    files = []
+    folders = []
 
-    if os.path.exists(package_json):
-        try:
-            with open(package_json, "r") as f:
-                package = json.load(f)
+    # Collect all file names and folder names
+    for root, dirs, filenames in os.walk(project_path):
 
-            dependencies = {
-                **package.get("dependencies", {}),
-                **package.get("devDependencies", {})
-            }
+        folders.extend(dirs)
+        files.extend(filenames)
 
-            if "react" in dependencies:
-                result["frontend"] = "React"
+    # --------------------------
+    # React
+    # --------------------------
+    if "package.json" in files:
 
-            if "vite" in dependencies:
-                result["frontend"] = "React + Vite"
+        package_path = os.path.join(project_path, "package.json")
 
-            result["language"] = "JavaScript / TypeScript"
+        if os.path.exists(package_path):
 
-        except Exception:
-            pass
+            with open(package_path, "r", encoding="utf-8", errors="ignore") as f:
 
-    # --------------------
-    # FastAPI
-    # --------------------
-    requirements = os.path.join(project_path, "requirements.txt")
+                data = f.read().lower()
 
-    if os.path.exists(requirements):
-        with open(requirements, "r") as f:
-            text = f.read().lower()
+                if "react" in data:
+                    return "React"
 
-            if "fastapi" in text:
-                result["backend"] = "FastAPI"
+                if "next" in data:
+                    return "Next.js"
 
-    # --------------------
+                if "vue" in data:
+                    return "Vue.js"
+
+                if "angular" in data:
+                    return "Angular"
+
+                if "express" in data:
+                    return "Express.js"
+
+                if "nestjs" in data:
+                    return "NestJS"
+
+    # --------------------------
+    # Python
+    # --------------------------
+    if "requirements.txt" in files:
+
+        req_path = os.path.join(project_path, "requirements.txt")
+
+        if os.path.exists(req_path):
+
+            with open(req_path, "r", encoding="utf-8", errors="ignore") as f:
+
+                data = f.read().lower()
+
+                if "fastapi" in data:
+                    return "FastAPI"
+
+                if "django" in data:
+                    return "Django"
+
+                if "flask" in data:
+                    return "Flask"
+
+    # --------------------------
     # Spring Boot
-    # --------------------
-    if os.path.exists(os.path.join(project_path, "pom.xml")):
-        result["backend"] = "Spring Boot"
+    # --------------------------
+    if "pom.xml" in files:
 
-    # --------------------
-    # Docker
-    # --------------------
-    if os.path.exists(os.path.join(project_path, "Dockerfile")):
-        result["docker"] = True
+        return "Spring Boot"
 
-    # --------------------
-    # Kubernetes
-    # --------------------
-    for root, _, files in os.walk(project_path):
-        for file in files:
-            if file.endswith(".yaml") or file.endswith(".yml"):
-                if "kubernetes" in file.lower():
-                    result["kubernetes"] = True
+    # --------------------------
+    # Maven
+    # --------------------------
+    if "build.gradle" in files:
 
-    return result
+        return "Gradle Project"
+
+    # --------------------------
+    # Laravel
+    # --------------------------
+    if "artisan" in files:
+
+        return "Laravel"
+
+    # --------------------------
+    # ASP.NET
+    # --------------------------
+    for file in files:
+
+        if file.endswith(".csproj"):
+
+            return "ASP.NET"
+
+    return "Unknown Framework"

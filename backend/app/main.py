@@ -3,10 +3,11 @@ from fastapi.middleware.cors import CORSMiddleware
 import shutil
 import os
 
-from services.extractor import extract_zip
-from services.framework_detector import detect_framework
-from services.analyzer import analyze_project
-from services.recommender import generate_recommendations
+from app.services.extractor import extract_zip
+from app.services.framework_detector import detect_framework
+from app.services.analyzer import analyze_project
+from app.services.recommender import generate_recommendations
+from app.services.health_calculator import calculate_health_score
 
 app = FastAPI(
     title="AI DevOps Engineer API",
@@ -42,8 +43,9 @@ def home():
         "message": "Welcome to AI DevOps Engineer 🚀"
     }
 
+
 # ----------------------------------------------------
-# Health Check API
+# Health API
 # ----------------------------------------------------
 @app.get("/health")
 def health():
@@ -52,8 +54,9 @@ def health():
         "service": "AI DevOps Engineer API"
     }
 
+
 # ----------------------------------------------------
-# Upload + Extract + Analyze API
+# Upload + Analyze API
 # ----------------------------------------------------
 @app.post("/upload")
 async def upload_project(file: UploadFile = File(...)):
@@ -74,33 +77,25 @@ async def upload_project(file: UploadFile = File(...)):
     # Project name
     project_name = file.filename.replace(".zip", "")
 
-    # Extract location
+    # Extract folder
     extract_path = os.path.join(EXTRACT_FOLDER, project_name)
 
     # Extract ZIP
     extract_result = extract_zip(file_path, extract_path)
 
-    # Detect framework
+    # Detect Framework
     framework = detect_framework(extract_path)
 
-    # Analyze project
+    # Analyze Project
     analysis = analyze_project(extract_path)
 
-    # Generate recommendations
+    # Generate Recommendations
     recommendations = generate_recommendations(analysis)
 
-    # Count issues
-    total_issues = sum(
-        1 for value in analysis.values() if value is False
-    )
+    # Calculate Health Score
+    summary = calculate_health_score(analysis)
 
-    # Health Score
-    total_checks = len(analysis)
-
-    health_score = round(
-        ((total_checks - total_issues) / total_checks) * 100
-    )
-
+    # Final Response
     return {
         "status": "success",
         "message": "Project uploaded, analyzed and recommendations generated successfully.",
@@ -117,9 +112,5 @@ async def upload_project(file: UploadFile = File(...)):
 
         "recommendations": recommendations,
 
-        "summary": {
-            "health_score": f"{health_score}%",
-            "total_checks": total_checks,
-            "issues_found": total_issues
-        }
+        "summary": summary
     }

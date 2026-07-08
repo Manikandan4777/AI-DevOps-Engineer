@@ -1,55 +1,62 @@
 import os
 
+
 def analyze_project(project_path: str):
 
-    report = {
-        "Dockerfile": False,
-        "docker-compose": False,
-        "Jenkinsfile": False,
-        "README": False,
-        ".gitignore": False,
-        "requirements.txt": False,
-        "package.json": False,
-        "pom.xml": False,
-        "GitHub Actions": False,
-        "Kubernetes": False
+    analysis = {
+        "dockerfile": False,
+        "docker_compose": False,
+        "readme": False,
+        "gitignore": False,
+        "github_actions": False,
+        "jenkins": False,
+        "kubernetes": False,
+        "terraform": False
     }
 
     for root, dirs, files in os.walk(project_path):
 
+        # ---------- Docker ----------
+        if "Dockerfile" in files:
+            analysis["dockerfile"] = True
+
+        if (
+            "docker-compose.yml" in files
+            or "docker-compose.yaml" in files
+        ):
+            analysis["docker_compose"] = True
+
+        # ---------- README ----------
+        if "README.md" in files or "readme.md" in files:
+            analysis["readme"] = True
+
+        # ---------- Git ----------
+        if ".gitignore" in files:
+            analysis["gitignore"] = True
+
+        # ---------- Jenkins ----------
+        if "Jenkinsfile" in files:
+            analysis["jenkins"] = True
+
+        # ---------- GitHub Actions ----------
+        if ".github" in dirs:
+            workflow_path = os.path.join(root, ".github", "workflows")
+
+            if os.path.exists(workflow_path):
+                analysis["github_actions"] = True
+
+        # ---------- Kubernetes ----------
+        if (
+            "deployment.yaml" in files
+            or "deployment.yml" in files
+            or "service.yaml" in files
+            or "service.yml" in files
+        ):
+            analysis["kubernetes"] = True
+
+        # ---------- Terraform ----------
         for file in files:
+            if file.endswith(".tf"):
+                analysis["terraform"] = True
 
-            if file == "Dockerfile":
-                report["Dockerfile"] = True
-
-            elif file == "docker-compose.yml":
-                report["docker-compose"] = True
-
-            elif file == "Jenkinsfile":
-                report["Jenkinsfile"] = True
-
-            elif file == "README.md":
-                report["README"] = True
-
-            elif file == ".gitignore":
-                report[".gitignore"] = True
-
-            elif file == "requirements.txt":
-                report["requirements.txt"] = True
-
-            elif file == "package.json":
-                report["package.json"] = True
-
-            elif file == "pom.xml":
-                report["pom.xml"] = True
-
-            elif ".github" in root and "workflows" in root:
-                report["GitHub Actions"] = True
-
-            elif file.endswith(".yaml") or file.endswith(".yml"):
-
-                if "kubernetes" in file.lower():
-
-                    report["Kubernetes"] = True
-
-    return report
+    return analysis
